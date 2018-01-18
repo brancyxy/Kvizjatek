@@ -23,7 +23,6 @@ namespace Kvizjatek
         static bool kozonsegsegitseg = false;
         static bool felezes = false;
         static string nulla = "0 Ft";
-
  
         static void Main(string[] args)
         {
@@ -31,23 +30,21 @@ namespace Kvizjatek
             {
                 Ujjatek();
                 Lobby();
-
-
-                if(nyertkerdes==15) Win();
+                Gamebody();
             }
         }
 
-        private static void Lobby()
+        private static int Lobby()
         {
             while (true)
             {
                 Console.Clear();
                 Console.WriteLine("Üdvözöllek a Legyen Ön is milliomosban!");
-                Console.WriteLine("Nyomj ENTER-t a folytatáshoz, H-t a szabályzat megtekintéséhez, és SPACE-t a nyeremények kiírásához.");
+                Console.WriteLine("Nyomj ENTER-t a folytatáshoz, H-t a szabályzat megtekintéséhez, és SPACE-t a nyeremények kiírásához.\n");
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 if (key.Key == ConsoleKey.Enter)
                 {
-                    Gamebody();
+                    return 0;
                 }
                 else if (key.Key == ConsoleKey.Spacebar)
                 {
@@ -58,15 +55,16 @@ namespace Kvizjatek
                     Commands.Szabalyzatkiiras();
                 }
             }
-
+            return 0;
         }
 
         private static void Gamebody()
         {
-            Console.Clear();
+            nyertkerdes = 0;
             for (int i = 0; i < kerdessor.Count; i++)
             {
-
+                Console.Clear();
+                char megjeloltvalasz='0';
                 Console.SetCursorPosition(0, 0);
                 Console.Write("{0,-2}. kérdés", nyertkerdes + 1);
 
@@ -74,33 +72,76 @@ namespace Kvizjatek
                 Console.SetCursorPosition(Console.WindowWidth - 20, 0);
                 if (nyertkerdes > 0) Console.Write("Összeg:{0,-13}", nyeremenyosszegek[nyertkerdes - 1]);
                 else Console.Write("Összeg:{0,-13}", nulla);
-                Console.ReadKey();
+
+
+                Console.ForegroundColor = ConsoleColor.White;
+
                 Console.SetCursorPosition(0, 1);
+                Console.WriteLine("\n{0}\n", kerdessor[i].kerdes);
 
                 foreach (var s in kerdessor[i].valaszok)
                 {
                     Console.WriteLine(s);
                 }
+                Console.ResetColor();
+                Console.WriteLine("Nyomd meg a 4 betű valamelyikét a válasz megjelöléséhez, vagy ENTERT a a további opciókhoz.");
 
-                while (true)
-                {//itt
-                    ConsoleKeyInfo key = Console.ReadKey(true);
-                    if (key.Key == ConsoleKey.Y)
-                    {
+                Valaszakerdesre(ref megjeloltvalasz);
 
-                    }
-                    else if (key.Key == ConsoleKey.N)
-                    {
-                      
-                    }
-                }
+
                 //Ki kell még találni, hogy melyik billentyűk lesznek a segítség hívások, de most QWE lesz.
-                //Szerintem a bankolás ESC lesz
-                if (true) nyertkerdes++;
+                if (megjeloltvalasz==kerdessor[i].jovalasz) nyertkerdes++;
                 else
                 {
-                    Lose();
                     i = 69696969; //most ez a szám tetszett ahhoz, hogy kilépjen a ciklusból
+                    Lose();
+                   
+                }
+            }
+            if (nyertkerdes == 15) Win();
+        }
+
+        private static void Valaszakerdesre(ref char k)
+        {
+            bool done = false;
+            while (!done)
+            {
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.A)
+                {
+                    done= Commands.Megjeloles("A");
+                    if (done == true)
+                    {
+                        k = 'A';
+                    }
+                }
+                else if (key.Key == ConsoleKey.B)
+                {
+                    done = Commands.Megjeloles("B");
+                    if (done == true)
+                    {
+                        k = 'B';
+                    }
+                }
+                else if (key.Key == ConsoleKey.C)
+                {
+                    done = Commands.Megjeloles("C");
+                    if (done == true)
+                    {
+                        k = 'C';
+                    }
+                }
+                else if (key.Key == ConsoleKey.D)
+                {
+                    done = Commands.Megjeloles("D");
+                    if (done == true)
+                    {
+                        k = 'D';
+                    }
+                }
+                else if (key.Key == ConsoleKey.Enter)
+                {
+                   //uigduiguidfiufd
                 }
             }
         }
@@ -202,7 +243,6 @@ namespace Kvizjatek
         static void Ujjatek()
         {
             Console.ResetColor();
-            nyertkerdes = 0;
             telefonsegitseg = false;
             kozonsegsegitseg = false;
             felezes = false;
@@ -224,7 +264,6 @@ namespace Kvizjatek
                     Console.Clear();
                 }
             }
-
         }
 
         static List<Kerdes> Kerdessor() //Összekeveri a 3 listát, majd mindháromból az első 5 lesz a kérdéssor
