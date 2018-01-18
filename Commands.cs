@@ -21,8 +21,13 @@ namespace Kvizjatek
                 Console.ResetColor();
             }
             Console.WriteLine("A nyeremény nem kumulatív, vagyis nem adódnak össze a kérdésekhez tartozó összegek.");
+            Console.WriteLine("A pirossal jelölt határ elérése után az előző nyeremény garantált veszteség esetén is!");
             Console.WriteLine();
         }
 
+        public static void Bankolas()
+        {
+
+        }
     }
 }
