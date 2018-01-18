@@ -1,0 +1,7 @@
+C:\Users\branc\source\repos\Kvizjatek\Kvizjatek\obj\Debug\Kvizjatek.csprojResolveAssemblyReference.cache
+C:\Users\branc\source\repos\Kvizjatek\Kvizjatek\obj\Debug\Kvizjatek.csproj.CoreCompileInputs.cache
+C:\Users\branc\source\repos\Kvizjatek\Kvizjatek\bin\Debug\Kvizjatek.exe.config
+C:\Users\branc\source\repos\Kvizjatek\Kvizjatek\bin\Debug\Kvizjatek.exe
+C:\Users\branc\source\repos\Kvizjatek\Kvizjatek\bin\Debug\Kvizjatek.pdb
+C:\Users\branc\source\repos\Kvizjatek\Kvizjatek\obj\Debug\Kvizjatek.exe
+C:\Users\branc\source\repos\Kvizjatek\Kvizjatek\obj\Debug\Kvizjatek.pdb

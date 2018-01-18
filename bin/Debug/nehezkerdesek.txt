@@ -1,0 +1,50 @@
+﻿Melyik Pokémon látszik legelőször az animében (1. rész 0:00)?;B
+A.Pikachu
+B.Gengar 
+C.Nidorina
+D.Ho-oh
+Ash melyik riválisának van egy Sawkja?;D
+A.Georgia
+B.Trip
+C.Bianca
+D.Stephan
+Melyik Pokémon az idő irányítója?;D
+Palkia
+Giratina
+Arceus
+Dialga
+Melyik Pokémonból van végtelen mennyiségben az összes barlangban?;A
+A.Zubat
+B.Weedle
+C.Nidorino
+D.Metapod
+Melyik Pokémon az első a Pokédexben?;C
+A.Pikachu
+B.Charmander
+C:Bulbasaur
+D.Mew
+Milyen Pokémonná fejlődik Turtwig tovább?;D
+A.Ivysaur
+B.Grovyle
+C.Bayleef
+D.Grotle
+Melyik régió kezdőpokémonja Cyndaquil?;B
+A.Kanto
+B.Johto
+C.Hoenn
+D.Sinnoh
+Kivel NEM harcolt Ash mikor Hoennben volt?;B
+A.May
+B.Harley
+C.Anthony
+D.Nicholai
+Hány Unown variáció van?;A
+A.28
+B.26
+C.45
+D.30
+Mi Jigglypuff száma a Pokédexben?;A
+A.#039
+B.#059
+C.#146
+D.#151
