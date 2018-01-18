@@ -24,24 +24,49 @@ namespace Kvizjatek
         static bool felezes = false;
         static string nulla = "0 Ft";
 
-
+ 
         static void Main(string[] args)
         {
             while (true)
             {
                 Ujjatek();
-
-                Gamebody();
+                Lobby();
 
 
                 if(nyertkerdes==15) Win();
             }
         }
 
+        private static void Lobby()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Üdvözöllek a Legyen Ön is milliomosban!");
+                Console.WriteLine("Nyomj ENTER-t a folytatáshoz, H-t a szabályzat megtekintéséhez, és SPACE-t a nyeremények kiírásához.");
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    Gamebody();
+                }
+                else if (key.Key == ConsoleKey.Spacebar)
+                {
+                    Commands.NyeremenytKiir(nyeremenyosszegek);
+                }
+                else if (key.Key == ConsoleKey.H)
+                {
+                    Commands.Szabalyzatkiiras();
+                }
+            }
+
+        }
+
         private static void Gamebody()
         {
+            Console.Clear();
             for (int i = 0; i < kerdessor.Count; i++)
             {
+
                 Console.SetCursorPosition(0, 0);
                 Console.Write("{0,-2}. kérdés", nyertkerdes + 1);
 
@@ -50,40 +75,81 @@ namespace Kvizjatek
                 if (nyertkerdes > 0) Console.Write("Összeg:{0,-13}", nyeremenyosszegek[nyertkerdes - 1]);
                 else Console.Write("Összeg:{0,-13}", nulla);
                 Console.ReadKey();
+                Console.SetCursorPosition(0, 1);
 
-                nyertkerdes++;
+                foreach (var s in kerdessor[i].valaszok)
+                {
+                    Console.WriteLine(s);
+                }
+
+                while (true)
+                {//itt
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+                    if (key.Key == ConsoleKey.Y)
+                    {
+
+                    }
+                    else if (key.Key == ConsoleKey.N)
+                    {
+                      
+                    }
+                }
+                //Ki kell még találni, hogy melyik billentyűk lesznek a segítség hívások, de most QWE lesz.
+                //Szerintem a bankolás ESC lesz
+                if (true) nyertkerdes++;
+                else
+                {
+                    Lose();
+                    i = 69696969; //most ez a szám tetszett ahhoz, hogy kilépjen a ciklusból
+                }
             }
         }
 
-        static void Lose()
+        static int Lose()
         {
             Console.Clear();
 
             Console.SetCursorPosition((int)(Console.WindowWidth / 2) - 30, (int)(Console.WindowHeight / 2) - 1);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("GG REKT NUB");
-            //// ha 5nél nagyobb.....
             Console.ReadKey();
+            Console.Clear();
             Console.ResetColor();
-            Eredmenylogolas();
+            Console.SetCursorPosition(5, (int)(Console.WindowHeight / 2) - 1);
+            if (nyertkerdes >= 5)
+            {
+                if (nyertkerdes >= 10)
+                {
+                    Console.WriteLine("Mivel a 10. kérdésnél továbbjutottál, {0} nyereményed még így is van.", nyeremenyosszegek[9]);
+                    Eredmenylogolas(nyeremenyosszegek[9]);
+                }
+                else
+                {
+                    Console.WriteLine("Mivel az 5. kérdésnél továbbjutottál, {0} nyereményed még így is van.", nyeremenyosszegek[4]);
+                    Eredmenylogolas(nyeremenyosszegek[4]);
+                }
+            }
+            Endgame();
+            return 0;
         } 
         static void Win()
         {
             Console.Clear();
 
-            Console.SetCursorPosition((int)(Console.WindowWidth / 2) - 30, (int)(Console.WindowHeight / 2) - 1);
+            Console.SetCursorPosition(5, (int)(Console.WindowHeight / 2) - 1);
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Nagyon béna gratulálószöveg, megnyerted a {0} főnyereményt!",nyeremenyosszegek[nyertkerdes-1]);
+            Console.WriteLine("Nagyon béna gratulálószöveg, megnyerted a {0} főnyereményt! Nyomj meg egy billentyűt a folytatáshoz! ",nyeremenyosszegek[nyertkerdes-1]);
             Console.ReadKey();
             Console.ResetColor();
 
 
-            Eredmenylogolas();
+            Eredmenylogolas(nyeremenyosszegek[nyertkerdes - 1]);
 
         }
 
-        private static void Eredmenylogolas()
+        private static void Eredmenylogolas(string nyeremeny)
         {
+            Console.Clear();
             Console.SetCursorPosition(0, 0);
             Console.WriteLine("El akarod menteni az eredményedet? Y/N");
 
@@ -93,10 +159,10 @@ namespace Kvizjatek
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 if (key.Key == ConsoleKey.Y)
                 {
-                    var sw = new StreamWriter(@"eredmenyek.txt");
+                    var sw = new StreamWriter(@"eredmenyek.txt",append: true);
                     Console.Write("Név:");
                     string nev = Console.ReadLine();
-                    sw.Write(DateTime.Now.ToLongDateString()+ ';' + nev + ';' + nyeremenyosszegek[nyertkerdes - 1]);
+                    sw.WriteLine(DateTime.Now.ToShortDateString()+" "+DateTime.Now.ToLongTimeString()+ ';' + nev + ';' +nyeremeny);
                     sw.Close();
                     done = true;
 
@@ -106,11 +172,16 @@ namespace Kvizjatek
                     done = true;
                 }
             }
+
+
+            ///az eredményeket vhol itt fogja megjeleníteni
             Endgame();
         }
 
         private static void Endgame()
         {
+            Console.Clear();
+            Console.SetCursorPosition(0, 0);
             Console.WriteLine("Nyomj ESCAPE-t a kilépéshez, ENTER-t új játék kezdéséhez.");
 
             bool done = false;
