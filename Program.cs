@@ -109,13 +109,13 @@ namespace Kvizjatek
             {
                 if (nyertkerdes >= 10)
                 {
-                    Console.WriteLine("Mivel a 10. kérdésnél továbbjutottál, {0} nyereményed még így is van.", nyeremenyosszegek[9]);
-                    Eredmenylogolas(nyeremenyosszegek[9]);
+                    Console.WriteLine("Mivel a 10. kérdésnél továbbjutottál, {0} nyereményed még így is van.", nyeremenyosszegek[10]);
+                    Eredmenylogolas(nyeremenyosszegek[10]);
                 }
                 else
                 {
-                    Console.WriteLine("Mivel az 5. kérdésnél továbbjutottál, {0} nyereményed még így is van.", nyeremenyosszegek[4]);
-                    Eredmenylogolas(nyeremenyosszegek[4]);
+                    Console.WriteLine("Mivel az 5. kérdésnél továbbjutottál, {0} nyereményed még így is van.", nyeremenyosszegek[5]);
+                    Eredmenylogolas(nyeremenyosszegek[5]);
                 }
             }
             Endgame();
