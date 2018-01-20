@@ -164,7 +164,6 @@ namespace Kvizjatek
                 }
             }
 
-            Eredmenymegjelenites();
             Endgame();
         }
 
@@ -179,6 +178,7 @@ namespace Kvizjatek
                 if (key.Key == ConsoleKey.Y)
                 {
                     Console.ForegroundColor = ConsoleColor.White;
+                    if (!File.Exists(@"eredmenyek.txt")) File.Create(@"eredmenyek.txt");
                     var sr = new StreamReader(@"eredmenyek.txt");
                     while (!sr.EndOfStream)
                     {
@@ -204,6 +204,7 @@ namespace Kvizjatek
 
         private static void Endgame()
         {
+            Eredmenymegjelenites();
             Console.Clear();
             Console.SetCursorPosition(0, 0);
             Console.WriteLine("Nyomj ESCAPE-t a kilépéshez, ENTER-t új játék kezdéséhez.");
