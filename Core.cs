@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace Kvizjatek
 {
@@ -48,16 +48,16 @@ namespace Kvizjatek
                     {
                         case ConsoleKey.A:
                             return 'A';
-                            break;
+
                         case ConsoleKey.B:
                             return 'B';
-                            break;
+
                         case ConsoleKey.C:
                             return 'C';
-                            break;
+
                         case ConsoleKey.D:
                             return 'D';
-                            break;
+
                     }
                 }
                 else if (key.Key == ConsoleKey.N)
@@ -93,8 +93,8 @@ namespace Kvizjatek
                 Console.ForegroundColor =(ConsoleColor)10;
                 Console.WriteLine("\nJó válasz!");
                 Console.ResetColor();
+                Thread.Sleep(1500);
 
-                Console.ReadKey();
                 return true;
             }
             else
@@ -102,8 +102,8 @@ namespace Kvizjatek
                 Console.ForegroundColor = (ConsoleColor)12;
                 Console.WriteLine("\nRossz válasz!");
                 Console.ResetColor();
+                Thread.Sleep(1500);
 
-                Console.ReadKey();
                 return false;
             }
         }

@@ -13,23 +13,23 @@ namespace Kvizjatek
         static List<string> nyeremenyosszegek = new List<string>();
 
 
-        static List<Kerdes> konnyukerdesek = new List<Kerdes>();
-        static List<Kerdes> kozepeskerdesek = new List<Kerdes>();
-        static List<Kerdes> nehezkerdesek = new List<Kerdes>();
+        static List<Kerdes> kerdesek = new List<Kerdes>();
+
 
         static List<Kerdes> kerdessor = new List<Kerdes>();
         static int nyertkerdes = 0;
-        static bool telefonsegitseg = false;
-        static bool kozonsegsegitseg = false;
-        static bool felezes = false;
-        static string nulla = "0 Ft";
+        struct Segitseghasznalat
+        {
+            public bool telefonsegitseg, kozonsegsegitseg, felezes;
+        }
  
         static void Main(string[] args)
         {
-            Console.Title="Legyen Ön is milliomos!";
+            Console.Title = "Legyen Ön is milliomos!";
+            var segitsegek = new Segitseghasznalat();
             while (true)
             {
-                Ujjatek();
+                Ujjatek(ref segitsegek);
                 Lobby();
                 Gamebody();
             }
@@ -94,7 +94,7 @@ namespace Kvizjatek
             if (nyertkerdes == 15) Win();
         }
 
-        static int Lose()
+        static void Lose()
         {
             Console.Clear();
 
@@ -119,8 +119,8 @@ namespace Kvizjatek
                 }
             }
             Endgame();
-            return 0;
         } 
+
         static void Win()
         {
             Console.Clear();
@@ -150,7 +150,9 @@ namespace Kvizjatek
                 {
                     var sw = new StreamWriter(@"eredmenyek.txt",append: true);
                     Console.Write("Név:");
+
                     string nev = Console.ReadLine();
+
                     sw.WriteLine(DateTime.Now.ToShortDateString()+" "+DateTime.Now.ToLongTimeString()+ ';' + nev + ';' +nyeremeny);
                     sw.Close();
                     done = true;
@@ -162,9 +164,42 @@ namespace Kvizjatek
                 }
             }
 
-
-            ///az eredményeket vhol itt fogja megjeleníteni
+            Eredmenymegjelenites();
             Endgame();
+        }
+
+        private static void Eredmenymegjelenites()
+        {
+            Console.WriteLine("Megjeleníted az eredményeket? Y/N");
+
+            bool done = false;
+            while (!done)
+            {
+                ConsoleKeyInfo key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Y)
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    var sr = new StreamReader(@"eredmenyek.txt");
+                    while (!sr.EndOfStream)
+                    {
+                        string[] sor = sr.ReadLine().Split(';');
+                        for (int i = 0; i < sor.Length; i++)
+                        {
+                            Console.Write("{0,-25}",sor[i]);
+                        }
+                        Console.WriteLine();
+                    }
+                    Console.ResetColor();
+
+                    sr.Close();
+                    done = true;
+                    Console.ReadKey();
+                }
+                else if (key.Key == ConsoleKey.N)
+                {
+                    done = true;
+                }
+            }
         }
 
         private static void Endgame()
@@ -188,12 +223,12 @@ namespace Kvizjatek
             }
         }
 
-        static void Ujjatek()
+        static void Ujjatek(ref Segitseghasznalat s)
         {
             Console.ResetColor();
-            telefonsegitseg = false;
-            kozonsegsegitseg = false;
-            felezes = false;
+            s.telefonsegitseg = false;
+            s.kozonsegsegitseg = false;
+            s.felezes = false;
             Console.Clear();
             Adatokatbe();
             Console.SetCursorPosition((int)(Console.WindowWidth / 2.5), 0);
@@ -214,29 +249,17 @@ namespace Kvizjatek
             }
         }
 
-        static List<Kerdes> Kerdessor() //Összekeveri a 3 listát, majd mindháromból az első 5 lesz a kérdéssor
+        static List<Kerdes> Kerdessor()
         {
             Console.Write("Kérdéssor létrehozása");
             Console.SetCursorPosition((int)(Console.WindowWidth / 2.5), 1);
             List<Kerdes> Kerdessor = new List<Kerdes>();
-            Osszekever(ref konnyukerdesek);
-            Osszekever(ref kozepeskerdesek);
-            Osszekever(ref nehezkerdesek);
-            for (int i = 0; i < 5; i++)
+            Osszekever(ref kerdesek);
+            for (int i = 0; i < 15; i++)
             {
-                Kerdessor.Add(konnyukerdesek[i]);
+                Kerdessor.Add(kerdesek[i]);
             }
-            for (int i = 0; i < 5; i++)
-            {
-                Kerdessor.Add(kozepeskerdesek[i]);
-            }
-            for (int i = 0; i < 5; i++)
-            {
-                Kerdessor.Add(nehezkerdesek[i]);
-            }
-            konnyukerdesek.Clear(); //kitörli a memóriából a feleslegessé vált listákat
-            kozepeskerdesek.Clear();
-            nehezkerdesek.Clear();
+            kerdesek.Clear(); //kitörli a memóriából a feleslegessé vált listát
             return Kerdessor;
         }
 
@@ -244,12 +267,8 @@ namespace Kvizjatek
         {
             Nyeremenytbe(ref nyeremenyosszegek);
             Console.WriteLine("Kérdések beolvasása folyamatban");
-            var sr1 = new StreamReader(@"konnyukerdesek.txt",Encoding.UTF8);
-            Kerdesfeltoltes(ref konnyukerdesek,sr1);
-            var sr2 = new StreamReader(@"kozepeskerdesek.txt");
-            Kerdesfeltoltes(ref kozepeskerdesek,sr2);
-            var sr3 = new StreamReader(@"nehezkerdesek.txt");
-            Kerdesfeltoltes(ref nehezkerdesek,sr3);
+            var sr = new StreamReader(@"kerdesek.txt",Encoding.UTF8);
+            Kerdesfeltoltes(ref kerdesek,sr);
         }
 
         static void Osszekever(ref List<Kerdes> lista)
