@@ -14,7 +14,8 @@ namespace Kvizjatek
 
         static List<Kerdes> kerdesek = new List<Kerdes>();
 
-
+        static int[] szavazatok = new int[4];
+        static string a = "nope";
         static List<Kerdes> kerdessor = new List<Kerdes>();
         static int nyertkerdes = 0;
         public struct Segitseghasznalat
@@ -63,7 +64,7 @@ namespace Kvizjatek
             for (int i = 0; i < kerdessor.Count; i++)
             {
                 char megjeloltvalasz='0';
-                Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref a);
 
                 bool done = false;
                 while (!done)
@@ -72,7 +73,7 @@ namespace Kvizjatek
                     ConsoleKeyInfo key = Console.ReadKey(true);
                     if (Core.Betutjelolt(key))
                     {
-                        done = Core.Valaszakerdesre(key, kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref megjeloltvalasz);
+                        done = Core.Valaszakerdesre(key, kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref megjeloltvalasz,a);
                         if (kerdessor[i].valaszok[Core.Megszerezindexet(megjeloltvalasz)]=="")//A felezésnél kihúzott válaszokat ne lehessen bejelölni
                         {
                             done = false;
@@ -82,7 +83,7 @@ namespace Kvizjatek
 
 
                             Console.ReadKey();
-                            Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                            Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek,ref a);
                         }
                     }
                     else if (key.Key == ConsoleKey.Enter)
@@ -103,14 +104,14 @@ namespace Kvizjatek
                                 else
                                 {
                                     done2 = true;
-                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref a);
                                 }
                             }
 
                             else if (key2.Key == ConsoleKey.Escape)
                             {
                                 done2 = true;
-                                Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref a);
                             }
 
                             else if (key2.Key == ConsoleKey.Q)
@@ -118,48 +119,54 @@ namespace Kvizjatek
                                 if (Core.Megerosites("Biztos, hogy igénybe akarod venni ezt a segítséget?"))
                                 {
                                     kerdessor[i]=Core.Felezes(kerdessor[i], nyertkerdes,i, kerdessor, nyeremenyosszegek,ref s);
-                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref a);
                                     done2 = true;
                                 }
                                 else
                                 {
                                     done2 = true;
-                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref a);
                                 }
                             }
                             else if (key2.Key == ConsoleKey.W)
                             {
                                 if (Core.Megerosites("Biztos, hogy igénybe akarod venni ezt a segítséget?"))
                                 {
-                                    //IMPLEMENT THIS PLS
-                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                    done2 = true;
+                                    a=Core.Telefonossegitseg(kerdessor[i],nyertkerdes,ref s);
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref a);
                                 }
                                 else
                                 {
                                     done2 = true;
-                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref a);
                                 }
                             }
                             else if (key2.Key == ConsoleKey.E)
                             {
                                 if (Core.Megerosites("Biztos, hogy igénybe akarod venni ezt a segítséget?"))
                                 {
-                                    //IMPLEMENT THIS PLS
+                                    szavazatok=Core.Kozonsegsegitsege(ref kerdessor, i, nyertkerdes, ref s);
+                                    kerdessor[i] = Core.Kiirkozonseget(kerdessor, i,szavazatok);
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref a);
                                     done2 = true;
-                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
                                 }
                                 else
                                 {
                                     done2 = true;
                                     Console.Clear();
-                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref a);
                                 }
                             }
                         }
                     }
 
                 }
-                if (Core.Visszajelzes(kerdessor[i].jovalasz, megjeloltvalasz) == true) nyertkerdes++;
+                if (Core.Visszajelzes(kerdessor[i].jovalasz, megjeloltvalasz) == true)
+                {
+                    nyertkerdes++;
+                    a = "nope";
+                }
                 else
                 {
                     Lose();
@@ -280,6 +287,7 @@ namespace Kvizjatek
         static void Ujjatek(ref Segitseghasznalat s)
         {
             Console.ResetColor();
+            a = "nope";
             s.telefonsegitseg = true;
             s.kozonsegsegitseg = true;
             s.felezes = true;

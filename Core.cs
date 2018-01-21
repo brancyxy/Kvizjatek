@@ -10,7 +10,7 @@ namespace Kvizjatek
     {
         static Random r = new Random();
 
-        internal static void Kiirmindent(Kerdes kerdes, int nyertkerdes, int i, List<Kerdes> kerdessor, List<string> nyeremenyosszegek)
+        internal static void Kiirmindent(Kerdes kerdes, int nyertkerdes, int i, List<Kerdes> kerdessor, List<string> nyeremenyosszegek,ref string a)
         {
             Console.Clear();
             Console.SetCursorPosition(0, 0);
@@ -27,14 +27,19 @@ namespace Kvizjatek
 
             foreach (var s in kerdessor[i].valaszok)
             {
-                Console.WriteLine(s);
+                if (a == s)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(s);
+                    Console.ResetColor();
+                }
+                else Console.WriteLine(s);
             }
 
             Console.ResetColor();
             Console.WriteLine("Nyomd meg a 4 betű valamelyikét a válasz megjelöléséhez, vagy ENTERT a a további opciókhoz.");
 
         }
-
         public static char Megjeloles(ConsoleKeyInfo valasz)
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -165,11 +170,93 @@ namespace Kvizjatek
             }
             else
             {
+                Hasznalt();
+
+                return kerdes;
+            }
+        }
+
+        internal static string Telefonossegitseg(Kerdes kerdes, int nyertkerdes,ref Kvizjatek.Program.Segitseghasznalat s)
+        {
+            if (s.telefonsegitseg==true)
+            {
+                s.telefonsegitseg = false;
+
+                int rnd = r.Next(1, 101);
+                if (100 - (nyertkerdes * 3) > rnd) return (kerdes.valaszok[Megszerezindexet(kerdes.jovalasz)]);
+                else
+                {
+                    while (true)
+                    {
+                        int a = r.Next(0, kerdes.valaszok.Length);
+                        if (!(kerdes.valaszok[Megszerezindexet(kerdes.jovalasz)] == kerdes.valaszok[a]))
+                        {
+                            return kerdes.valaszok[a];
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Hasznalt();
+
+                return "nope";
+            }
+        }
+
+        internal static Kerdes Kiirkozonseget(List<Kerdes> kerdessor, int i,int[] szavazatok)
+        {
+            Kerdes k = kerdessor[i];
+
+                for (int j = 0; j < k.valaszok.Length; j++)
+                {
+                    k.valaszok[j] = String.Format("{0,-25} :{1,-4} szavazat", k.valaszok[j], szavazatok[j]);
+                }
+
+
+            return k;
+        }
+
+        internal static int[] Kozonsegsegitsege(ref List<Kerdes> kerdessor, int i,int nyertkerdes,ref Kvizjatek.Program.Segitseghasznalat s)
+        {
+            int[] szavazatok = { 0, 0, 0, 0 };
+            if (s.kozonsegsegitseg == true)
+            {
+                s.kozonsegsegitseg = false;
+                Kerdes k = kerdessor[i];
+                int jovalasz = Megszerezindexet(k.jovalasz);
+
+                szavazatok[jovalasz] += 200;
+                for (int j = 0; j < 400; j++)
+                {
+                    szavazatok[r.Next(0, szavazatok.Length)]++;
+                }
+                for (int j = 0; j < 1400; j++)
+                {
+                    int rnd = r.Next(1, 101);
+                    if (100 - (nyertkerdes * 4) > rnd) szavazatok[jovalasz]++;
+
+                    else
+                    {
+                        int a = r.Next(0, szavazatok.Length);
+                        while (a==jovalasz) a = r.Next(0, szavazatok.Length);
+                        szavazatok[a]++;
+                    }
+                }
+                return szavazatok;
+            }
+            else
+            {
+                Hasznalt();
+                return szavazatok;
+            }
+        }
+
+        private static void Hasznalt()
+        {
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("\nA segítség már használt!");
                 Console.ResetColor();
-                return kerdes;
-            }
         }
 
         public static byte Megszerezindexet(char c)
@@ -206,9 +293,8 @@ namespace Kvizjatek
             Console.ReadKey();
         }
 
-       public static bool Valaszakerdesre(ConsoleKeyInfo key, Kerdes kerdes, int nyertkerdes, int i, List<Kerdes> kerdessor, List<string> nyeremenyosszegek, ref char megjeloltvalasz)
+       public static bool Valaszakerdesre(ConsoleKeyInfo key, Kerdes kerdes, int nyertkerdes, int i, List<Kerdes> kerdessor, List<string> nyeremenyosszegek, ref char megjeloltvalasz, string a)
         {
-            {
                 megjeloltvalasz = Core.Megjeloles(key);
 
                 if (megjeloltvalasz == 'A' || megjeloltvalasz == 'B' || megjeloltvalasz == 'C' || megjeloltvalasz == 'D')
@@ -216,11 +302,10 @@ namespace Kvizjatek
                 else
                 {
                     Console.Clear();
-                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek,ref a);
 
                     return false;
                 }
-            }
         }
 
         internal static bool Betutjelolt(ConsoleKeyInfo key)
@@ -241,8 +326,8 @@ namespace Kvizjatek
             Vizsgalsegitseget(segitsegek.felezes);
             Console.Write("W) Telefonos segítség (100% helyesség az első kérdésnél, utána kérdésenként -3%");
             Vizsgalsegitseget(segitsegek.telefonsegitseg);
-            Console.WriteLine("E) Közönség segítség (2000 szavazat, 400 tippel, 1600 a következőképpen számol:");
-            Console.Write("100-(Helyesen megválaszolt kérdések száma*3) %");
+            Console.WriteLine("E) Közönség segítség (2000 szavazat, 400 tippel (25%), 200 tudja, 1400 a következőképpen:");
+            Console.Write("100-(Helyesen megválaszolt kérdések száma*4) %");
             Vizsgalsegitseget(segitsegek.kozonsegsegitseg);
             Console.ResetColor();
             Console.WriteLine();
