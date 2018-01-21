@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Threading;
 
 namespace Kvizjatek
 {
@@ -18,7 +17,7 @@ namespace Kvizjatek
 
         static List<Kerdes> kerdessor = new List<Kerdes>();
         static int nyertkerdes = 0;
-        struct Segitseghasznalat
+        public struct Segitseghasznalat
         {
             public bool telefonsegitseg, kozonsegsegitseg, felezes;
         }
@@ -31,11 +30,11 @@ namespace Kvizjatek
             {
                 Ujjatek(ref segitsegek);
                 Lobby();
-                Gamebody();
+                Gamebody(ref segitsegek);
             }
         }
 
-        private static int Lobby()
+        private static byte Lobby()
         {
             while (true)
             {
@@ -58,12 +57,11 @@ namespace Kvizjatek
             }
         }
 
-        private static void Gamebody()
+        private static byte Gamebody(ref Segitseghasznalat s)
         {
             nyertkerdes = 0;
             for (int i = 0; i < kerdessor.Count; i++)
             {
-                Console.Clear();
                 char megjeloltvalasz='0';
                 Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
 
@@ -74,24 +72,102 @@ namespace Kvizjatek
                     ConsoleKeyInfo key = Console.ReadKey(true);
                     if (Core.Betutjelolt(key))
                     {
-                        done= Core.Valaszakerdesre(key, kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref megjeloltvalasz);
+                        done = Core.Valaszakerdesre(key, kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref megjeloltvalasz);
+                        if (kerdessor[i].valaszok[Core.Megszerezindexet(megjeloltvalasz)]=="")//A felezésnél kihúzott válaszokat ne lehessen bejelölni
+                        {
+                            done = false;
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("\nKi van húzva az a válasz!");
+                            Console.ResetColor();
+
+
+                            Console.ReadKey();
+                            Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                        }
                     }
-                    else if(key.Key== ConsoleKey.Enter)
+                    else if (key.Key == ConsoleKey.Enter)
                     {
+                        Core.Kiirsegitsegek(s);
+                        bool done2 = false;
+                        while (!done2)
+                        {
+                            ConsoleKeyInfo key2 = Console.ReadKey(true);
+                            if (key2.Key == ConsoleKey.Spacebar)
+                            {
 
+                                if (Core.Megerosites("Biztos, hogy szeretnél távozni?\n(A jelenlegi pénzed megmarad, de nem fogod tudni folytatni.)"))
+                                {
+                                    Eredmenylogolas(nyeremenyosszegek[nyertkerdes]);
+                                    return 0;
+                                }
+                                else
+                                {
+                                    done2 = true;
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                }
+                            }
+
+                            else if (key2.Key == ConsoleKey.Escape)
+                            {
+                                done2 = true;
+                                Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                            }
+
+                            else if (key2.Key == ConsoleKey.Q)
+                            {
+                                if (Core.Megerosites("Biztos, hogy igénybe akarod venni ezt a segítséget?"))
+                                {
+                                    kerdessor[i]=Core.Felezes(kerdessor[i], nyertkerdes,i, kerdessor, nyeremenyosszegek,ref s);
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                    done2 = true;
+                                }
+                                else
+                                {
+                                    done2 = true;
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                }
+                            }
+                            else if (key2.Key == ConsoleKey.W)
+                            {
+                                if (Core.Megerosites("Biztos, hogy igénybe akarod venni ezt a segítséget?"))
+                                {
+                                    //IMPLEMENT THIS PLS
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                }
+                                else
+                                {
+                                    done2 = true;
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                }
+                            }
+                            else if (key2.Key == ConsoleKey.E)
+                            {
+                                if (Core.Megerosites("Biztos, hogy igénybe akarod venni ezt a segítséget?"))
+                                {
+                                    //IMPLEMENT THIS PLS
+                                    done2 = true;
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                }
+                                else
+                                {
+                                    done2 = true;
+                                    Console.Clear();
+                                    Core.Kiirmindent(kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek);
+                                }
+                            }
+                        }
                     }
+
                 }
-
-
-                // a segítség hívások  QWE lesznek.
                 if (Core.Visszajelzes(kerdessor[i].jovalasz, megjeloltvalasz) == true) nyertkerdes++;
                 else
                 {
                     Lose();
-                    i = 1234567;
+                    return 0;
                 }
             }
             if (nyertkerdes == 15) Win();
+            return 0;
         }
 
         static void Lose()
@@ -140,13 +216,7 @@ namespace Kvizjatek
         {
             Console.Clear();
             Console.SetCursorPosition(0, 0);
-            Console.WriteLine("El akarod menteni az eredményedet? Y/N");
-
-            bool done = false;
-            while (!done)
-            {
-                ConsoleKeyInfo key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.Y)
+            if (Core.Megerosites("El akarod menteni az eredményedet?"))
                 {
                     var sw = new StreamWriter(@"eredmenyek.txt",append: true);
                     Console.Write("Név:");
@@ -155,50 +225,33 @@ namespace Kvizjatek
 
                     sw.WriteLine(DateTime.Now.ToShortDateString()+" "+DateTime.Now.ToLongTimeString()+ ';' + nev + ';' +nyeremeny);
                     sw.Close();
-                    done = true;
-
                 }
-                else if (key.Key == ConsoleKey.N)
-                {
-                    done = true;
-                }
-            }
-
             Endgame();
         }
 
         private static void Eredmenymegjelenites()
         {
-            Console.WriteLine("Megjeleníted az eredményeket? Y/N");
-
-            bool done = false;
-            while (!done)
+            if(Core.Megerosites("Megjeleníted az eredményeket?"))
             {
-                ConsoleKeyInfo key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.Y)
+                Console.ForegroundColor = ConsoleColor.White;
+                if (!File.Exists(@"eredmenyek.txt")) File.Create(@"eredmenyek.txt").Close();
+                var sr = new StreamReader(@"eredmenyek.txt");
+                while (!sr.EndOfStream)
                 {
-                    Console.ForegroundColor = ConsoleColor.White;
-                    if (!File.Exists(@"eredmenyek.txt")) File.Create(@"eredmenyek.txt");
-                    var sr = new StreamReader(@"eredmenyek.txt");
-                    while (!sr.EndOfStream)
+                    string[] sor = sr.ReadLine().Split(';');
+                    for (int i = 0; i < sor.Length; i++)
                     {
-                        string[] sor = sr.ReadLine().Split(';');
-                        for (int i = 0; i < sor.Length; i++)
-                        {
-                            Console.Write("{0,-25}",sor[i]);
-                        }
-                        Console.WriteLine();
+                        Console.Write("{0,-25}", sor[i]);
                     }
-                    Console.ResetColor();
+                    Console.WriteLine();
+                }
+                sr.Close();
 
-                    sr.Close();
-                    done = true;
-                    Console.ReadKey();
-                }
-                else if (key.Key == ConsoleKey.N)
-                {
-                    done = true;
-                }
+
+                Console.ResetColor();
+
+                Console.ReadKey();
+            
             }
         }
 
@@ -227,9 +280,9 @@ namespace Kvizjatek
         static void Ujjatek(ref Segitseghasznalat s)
         {
             Console.ResetColor();
-            s.telefonsegitseg = false;
-            s.kozonsegsegitseg = false;
-            s.felezes = false;
+            s.telefonsegitseg = true;
+            s.kozonsegsegitseg = true;
+            s.felezes = true;
             Console.Clear();
             Adatokatbe();
             Console.SetCursorPosition((int)(Console.WindowWidth / 2.5), 0);
@@ -260,7 +313,7 @@ namespace Kvizjatek
             {
                 Kerdessor.Add(kerdesek[i]);
             }
-            kerdesek.Clear(); //kitörli a memóriából a feleslegessé vált listát
+            kerdesek.Clear();
             return Kerdessor;
         }
 

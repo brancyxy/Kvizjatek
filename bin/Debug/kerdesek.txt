@@ -109,10 +109,10 @@ B.Trip
 C.Bianca
 D.Stephan
 Melyik Pokémon az idő irányítója?;D
-Palkia
-Giratina
-Arceus
-Dialga
+A.Palkia
+B.Giratina
+C.Arceus
+D.Dialga
 Melyik Pokémonból van végtelen mennyiségben az összes barlangban?;A
 A.Zubat
 B.Weedle
