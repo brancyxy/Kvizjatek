@@ -275,7 +275,7 @@ namespace Kvizjatek
                 case 'D':
                     return 3;
             }
-            return 123;
+            return 0;
         }
 
         public static void Szabalyzatkiiras()

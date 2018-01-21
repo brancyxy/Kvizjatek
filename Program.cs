@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace Kvizjatek
 {
@@ -74,7 +75,7 @@ namespace Kvizjatek
                     if (Core.Betutjelolt(key))
                     {
                         done = Core.Valaszakerdesre(key, kerdessor[i], nyertkerdes, i, kerdessor, nyeremenyosszegek, ref megjeloltvalasz,a);
-                        if (kerdessor[i].valaszok[Core.Megszerezindexet(megjeloltvalasz)]=="")//A felezésnél kihúzott válaszokat ne lehessen bejelölni
+                        if (!Core.Betutjelolt(key) ||kerdessor[i].valaszok[Core.Megszerezindexet(megjeloltvalasz)]=="" )//A felezésnél kihúzott válaszokat ne lehessen bejelölni
                         {
                             done = false;
                             Console.ForegroundColor = ConsoleColor.Red;
@@ -201,7 +202,6 @@ namespace Kvizjatek
                     Eredmenylogolas(nyeremenyosszegek[5]);
                 }
             }
-            Endgame();
         } 
 
         static void Win()
@@ -338,7 +338,9 @@ namespace Kvizjatek
 
             for (int t = 0; t < lista.Count; t++)
             {
+                Thread.Sleep(11);
                 Console.Write(".");
+
                 Kerdes tmp = lista[t];
                 int rnd = r.Next(t, lista.Count);
                 lista[t] = lista[rnd];
@@ -350,7 +352,9 @@ namespace Kvizjatek
         {
             while (!sr.EndOfStream)
             {
-                Console.Write(".");
+                Thread.Sleep(11);
+               Console.Write(".");
+
                 string[] elsosor = new string[2];
                 string[] valaszok = new string[4];
                 elsosor = sr.ReadLine().Split(';'); // 1. elem a kérdés 2. a válasz
